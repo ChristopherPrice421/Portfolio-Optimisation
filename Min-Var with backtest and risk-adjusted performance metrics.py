@@ -1,12 +1,15 @@
-#Min-Var with backtest
-
-
 import numpy as np
 import pandas as pd
 import scipy.optimize as sco
+import matplotlib.pyplot as plt
+import yfinance as yf
 
-# Load the historical data of the assets
-data = pd.read_csv('asset_prices.csv', index_col='Date')
+
+tickers = ['AAPL', 'GOOGL', 'AMZN', 'MSFT']
+
+# Get the stock data from Yahoo Finance
+data = yf.download(tickers, start='2020-01-01', end='2022-01-01', group_by='ticker')
+
 
 # Calculate the returns of the assets
 returns = data.pct_change().dropna()
@@ -14,7 +17,7 @@ returns = data.pct_change().dropna()
 # Define the optimization function to minimize the portfolio variance
 def portfolio_variance(w, returns):
     cov = np.cov(returns.T)
-    return np.dot(np.dot(w, cov), w)
+    return np.dot(np.dot(w, cov), w) + 1e-6  # Add small value to variance
 
 # Define the optimization constraint that the weights add up to 1
 def constraint_sum(w):
